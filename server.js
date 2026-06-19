@@ -20,6 +20,18 @@ const cloudinaryConfig = {
 const cloudinaryEnabled = Boolean(
     cloudinaryConfig.cloudName && cloudinaryConfig.apiKey && cloudinaryConfig.apiSecret
 );
+const databaseSslCaPath = String(process.env.DB_SSL_CA_PATH || "").trim();
+const databaseSsl = databaseSslCaPath
+    ? {
+          ca: fs.readFileSync(
+              path.isAbsolute(databaseSslCaPath)
+                  ? databaseSslCaPath
+                  : path.resolve(rootDirectory, databaseSslCaPath),
+              "utf8"
+          ),
+          rejectUnauthorized: true,
+      }
+    : undefined;
 
 if (!cloudinaryEnabled) fs.mkdirSync(uploadDirectory, { recursive: true });
 
@@ -36,6 +48,7 @@ const pool = mysql.createPool({
     connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
     decimalNumbers: true,
     dateStrings: true,
+    ssl: databaseSsl,
 });
 
 const imageExtensions = new Map([

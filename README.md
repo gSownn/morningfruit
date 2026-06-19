@@ -64,6 +64,15 @@ ADMIN_PASSWORD=mat-khau-admin-moi
 SESSION_SECRET=mot-chuoi-ngau-nhien-dai-va-kho-doan
 ```
 
+Nếu MySQL cloud yêu cầu SSL (ví dụ Aiven), tải CA certificate vào `certs/ca.pem`
+và thêm:
+
+```env
+DB_SSL_CA_PATH=certs/ca.pem
+```
+
+Khi dùng MySQL local, để trống biến này.
+
 Không đưa file `.env` lên Git hoặc gửi công khai.
 
 Khi deploy, nên lưu ảnh trên Cloudinary thay vì ổ đĩa tạm của hosting. Tạo tài khoản
