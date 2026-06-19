@@ -1,0 +1,21 @@
+{
+  "name": "gs-k-food",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Website và trang quản trị sản phẩm G&S K-Food",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "migrate": "node migrate.js",
+    "check": "node --check server.js && node --check script.js && node --check admin.js && node --check migrate.js && node --check verify-multiline.js",
+    "verify:multiline": "node verify-multiline.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "multer": "^2.2.0",
+    "mysql2": "^3.14.0"
+  }
+}

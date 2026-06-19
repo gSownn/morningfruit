@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>G&amp;S K-Food</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container header-main">
+                <button class="menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false"
+                    aria-controls="mainNav">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <small>MENU</small>
+                </button>
+
+                <a class="logo" href="#home" aria-label="G&S K-Food">
+                    G&amp;S <span>K-Food</span>
+                </a>
+
+                <div class="header-actions">
+                    <a class="header-icon" href="tel:0971214523" aria-label="Gọi điện">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 3.08 5.18 2 2 0 0 1 5.06 3h3a2 2 0 0 1 2 1.72c.12.86.32 1.7.6 2.5a2 2 0 0 1-.45 2.11L9 10.54a16 16 0 0 0 4.46 4.46l1.21-1.21a2 2 0 0 1 2.11-.45c.8.28 1.64.48 2.5.6A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                    </a>
+                    <button class="header-icon search-toggle" type="button" aria-label="Mở tìm kiếm">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m21 21-4.35-4.35" />
+                            <circle cx="11" cy="11" r="7" />
+                        </svg>
+                    </button>
+                    <a class="header-icon" href="#contact" aria-label="Tài khoản">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 21a8 8 0 0 0-16 0" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </a>
+                    <button class="header-icon cart-btn" type="button" aria-label="Giỏ hàng">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 6H6" />
+                        </svg>
+                        <span class="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container search-area">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm trái cây, rau củ, tạp hóa..." />
+            <button type="button" id="searchButton">Tìm kiếm</button>
+        </div>
+
+        <nav class="nav container" id="mainNav">
+            <a href="#products" data-filter="trái cây việt nam">Trái cây Việt Nam</a>
+            <a href="#products" data-filter="rau sạch">Rau sạch</a>
+            <a href="#products" data-filter="củ">Củ &amp; hạt</a>
+            <a href="#products" data-filter="thịt cá hải sản">Thịt cá &amp; hải sản</a>
+            <a href="#products" data-filter="tạp hóa việt nam">Tạp hóa VN</a>
+        </nav>
+
+        <div class="header-categories">
+            <div class="container header-category-list">
+                <a class="home-shortcut" href="#home" aria-label="Trang chủ" data-show-all data-scroll-target="#home">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m3 10 9-7 9 7" />
+                        <path d="M5 9.5V21h14V9.5" />
+                        <path d="M9 21v-7h6v7" />
+                    </svg>
+                </a>
+                <a class="category-tab" href="#products" data-filter="trái cây việt nam">Trái cây Việt Nam</a>
+                <a class="category-tab" href="#products" data-filter="rau sạch">Rau sạch</a>
+                <a class="category-tab" href="#products" data-filter="củ">Củ &amp; hạt</a>
+                <a class="category-tab" href="#products" data-filter="thịt cá hải sản">Thịt cá &amp; hải sản</a>
+                <a class="category-tab" href="#products" data-filter="tạp hóa việt nam">Tạp hóa VN</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner -->
+    <section class="hero" id="home">
+        <div class="container hero-content">
+            <div class="hero-text">
+                <p class="sub-title">Tươi ngon mỗi ngày</p>
+                <h1>Thực phẩm tươi sạch cho bữa cơm gia đình Việt</h1>
+                <p>
+                    Cam kết sản phẩm chất lượng, nguồn gốc rõ ràng, giao hàng nhanh trong ngày.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#products" class="btn-primary">Mua ngay</a>
+                    <a href="#categories" class="btn-outline">Xem danh mục</a>
+                </div>
+            </div>
+
+            <div class="hero-card">
+                <img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=800&q=80"
+                    alt="Trái cây tươi" />
+            </div>
+        </div>
+    </section>
+
+    <!-- Danh mục -->
+    <section class="categories" id="categories">
+        <div class="container">
+            <h2>Danh mục sản phẩm</h2>
+
+            <div class="category-grid">
+                <div class="category-item" data-filter="trái cây việt nam">🍊 Trái cây Việt Nam</div>
+                <div class="category-item" data-filter="rau sạch">🥦 Rau sạch</div>
+                <div class="category-item" data-filter="củ">🥔 Củ &amp; hạt</div>
+                <div class="category-item" data-filter="thịt cá hải sản">🐟 Thịt cá &amp; hải sản</div>
+                <div class="category-item" data-filter="tạp hóa việt nam">🛒 Tạp hóa VN</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hàng hot trong tuần -->
+    <section class="products-section weekly-hot" id="weeklyHot">
+        <div class="container">
+            <div class="section-title">
+                <h2>🔥 Hàng hot trong tuần</h2>
+                <a href="#products" data-show-all data-scroll-target="#products">Xem tất cả sản phẩm</a>
+            </div>
+
+            <div class="product-grid weekly-hot-grid">
+                <div class="product-card" data-category-slug="trai-cay-viet-nam"
+                    data-keywords="hàng hot tuần xoài cát hòa lộc">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=700&q=80"
+                            alt="Xoài cát Hòa Lộc" />
+                        <span class="badge">Top 1 tuần</span>
+                        <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                    </div>
+                    <div class="product-info">
+                        <h3>Xoài cát Hòa Lộc</h3>
+                        <p class="product-description">Xoài chín tự nhiên, vị ngọt thơm.</p>
+                        <p class="price">85.000đ / kg</p>
+                        <button class="product-detail-action" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category-slug="rau-sach"
+                    data-keywords="hàng hot tuần cải bó xôi đà lạt">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=700&q=80"
+                            alt="Cải bó xôi Đà Lạt" />
+                        <span class="badge">Mua nhiều</span>
+                        <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                    </div>
+                    <div class="product-info">
+                        <h3>Cải bó xôi Đà Lạt</h3>
+                        <p class="product-description">Rau canh tác theo tiêu chuẩn VietGAP.</p>
+                        <p class="price">32.000đ / bó</p>
+                        <button class="product-detail-action" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category-slug="thit-ca-va-hai-san"
+                    data-keywords="hàng hot tuần cá hồi phi lê">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1599084993091-1cb5c0721cc6?auto=format&fit=crop&w=700&q=80"
+                            alt="Cá hồi phi lê" />
+                        <span class="badge">Ưu đãi tuần</span>
+                        <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                    </div>
+                    <div class="product-info">
+                        <h3>Cá hồi phi lê</h3>
+                        <p class="product-description">Cá hồi phi lê sơ chế sẵn.</p>
+                        <p class="price">289.000đ / 500g</p>
+                        <button class="product-detail-action" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category-slug="tap-hoa-vn"
+                    data-keywords="hàng hot tuần gạo st25">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=700&q=80"
+                            alt="Gạo thơm ST25" />
+                        <span class="badge">Bán chạy</span>
+                        <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                    </div>
+                    <div class="product-info">
+                        <h3>Gạo thơm ST25</h3>
+                        <p class="product-description">Gạo thơm dẻo, đóng túi 5kg.</p>
+                        <p class="price">185.000đ / túi 5kg</p>
+                        <button class="product-detail-action" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sản phẩm hot theo danh mục -->
+    <section class="products-section" id="products">
+        <div class="container">
+
+            <div class="section-title">
+                <h2>Sản phẩm theo danh mục</h2>
+            </div>
+
+            <p class="search-status" id="searchStatus" aria-live="polite"></p>
+
+            <div class="hot-category" data-category="trái cây việt nam" data-category-slug="trai-cay-viet-nam">
+                <div class="hot-category-title">
+                    <span>🍊</span>
+                    <h3>Trái cây Việt Nam</h3>
+                    <a href="#products" data-category-view-all data-filter="trái cây việt nam">Xem tất cả trái cây</a>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card" data-keywords="trái cây việt nam xoài cát hòa lộc">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=700&q=80"
+                                alt="Xoài cát Hòa Lộc" />
+                            <span class="badge">Hot</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Xoài cát Hòa Lộc</h3>
+                            <p class="product-description">Xoài chín tự nhiên, vị ngọt thơm.</p>
+                            <p class="price">85.000đ / kg</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                    <div class="product-card" data-keywords="trái cây việt nam nho đen ninh thuận">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1596363505729-4190a9506133?auto=format&fit=crop&w=700&q=80"
+                                alt="Nho đen Ninh Thuận" />
+                            <span class="badge">Bán chạy</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Nho đen Ninh Thuận</h3>
+                            <p class="product-description">Nho tươi vị ngọt thanh.</p>
+                            <p class="price">120.000đ / kg</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                    <div class="product-card" data-keywords="trái cây việt nam cam sành miền tây">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&w=700&q=80"
+                                alt="Cam sành miền Tây" />
+                            <span class="badge">Tươi mới</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Cam sành miền Tây</h3>
+                            <p class="product-description">Cam mọng nước, thu hoạch trong ngày.</p>
+                            <p class="price">45.000đ / kg</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hot-category" data-category="rau sạch" data-category-slug="rau-sach">
+                <div class="hot-category-title">
+                    <span>🥦</span>
+                    <h3>Rau sạch</h3>
+                    <a href="#products" data-category-view-all data-filter="rau sạch">Xem tất cả rau sạch</a>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card" data-keywords="rau sạch cải bó xôi đà lạt">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=700&q=80"
+                                alt="Cải bó xôi Đà Lạt" />
+                            <span class="badge">Rau sạch</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Cải bó xôi Đà Lạt</h3>
+                            <p class="product-description">Rau canh tác theo tiêu chuẩn VietGAP.</p>
+                            <p class="price">32.000đ / bó</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                    <div class="product-card" data-keywords="rau sạch bông cải xanh">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?auto=format&fit=crop&w=700&q=80"
+                                alt="Bông cải xanh" />
+                            <span class="badge">Bán chạy</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Bông cải xanh</h3>
+                            <p class="product-description">Bông cải giòn ngọt, giàu dinh dưỡng.</p>
+                            <p class="price">48.000đ / kg</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                    <div class="product-card" data-keywords="rau sạch xà lách thủy canh">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1557844352-761f2565b576?auto=format&fit=crop&w=700&q=80"
+                                alt="Xà lách thủy canh" />
+                            <span class="badge">Mới về</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Xà lách thủy canh</h3>
+                            <p class="product-description">Xà lách sạch thu hoạch trong ngày.</p>
+                            <p class="price">39.000đ / túi</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hot-category" data-category="củ hạt" data-category-slug="cu-va-hat">
+                <div class="hot-category-title">
+                    <span>🥔</span>
+                    <h3>Củ &amp; hạt</h3>
+                    <a href="#products" data-category-view-all data-filter="củ">Xem tất cả củ &amp; hạt</a>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card" data-keywords="củ hạt khoai tây đà lạt">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=700&q=80"
+                                alt="Khoai tây Đà Lạt" />
+                            <span class="badge">Bán chạy</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Khoai tây Đà Lạt</h3>
+                            <p class="product-description">Khoai tây dẻo thơm, củ đều.</p>
+                            <p class="price">35.000đ / kg</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                    <div class="product-card" data-keywords="củ hạt khoai lang mật">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1596097635121-14b63b7a0c19?auto=format&fit=crop&w=700&q=80"
+                                alt="Khoai lang mật" />
+                            <span class="badge">Đặc sản</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Khoai lang mật</h3>
+                            <p class="product-description">Khoai lang mật dẻo ngọt tự nhiên.</p>
+                            <p class="price">42.000đ / kg</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                    <div class="product-card" data-keywords="củ hạt hạt điều rang muối">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&w=700&q=80"
+                                alt="Hạt điều rang muối" />
+                            <span class="badge">Hot</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Hạt điều rang muối</h3>
+                            <p class="product-description">Hạt điều rang giòn, vị mặn vừa.</p>
+                            <p class="price">165.000đ / hộp</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hot-category" data-category="thịt cá hải sản" data-category-slug="thit-ca-va-hai-san">
+                <div class="hot-category-title">
+                    <span>🐟</span>
+                    <h3>Thịt cá &amp; hải sản</h3>
+                    <a href="#products" data-category-view-all data-filter="thịt cá hải sản">Xem tất cả thịt cá</a>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card" data-keywords="thịt cá hải sản cá hồi phi lê">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1599084993091-1cb5c0721cc6?auto=format&fit=crop&w=700&q=80"
+                                alt="Cá hồi phi lê" />
+                            <span class="badge">Cao cấp</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Cá hồi phi lê</h3>
+                            <p class="product-description">Cá hồi phi lê sơ chế sẵn.</p>
+                            <p class="price">289.000đ / 500g</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                    <div class="product-card" data-keywords="thịt cá hải sản tôm sú tươi">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&w=700&q=80"
+                                alt="Tôm sú tươi" />
+                            <span class="badge">Tươi sống</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Tôm sú tươi</h3>
+                            <p class="product-description">Tôm sú tươi giao nhanh trong ngày.</p>
+                            <p class="price">235.000đ / kg</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                    <div class="product-card" data-keywords="thịt cá hải sản thịt bò thăn">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1588347818036-558601350947?auto=format&fit=crop&w=700&q=80"
+                                alt="Thịt bò thăn" />
+                            <span class="badge">Bán chạy</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Thịt bò thăn</h3>
+                            <p class="product-description">Thịt bò thăn mềm, sơ chế trong ngày.</p>
+                            <p class="price">189.000đ / 500g</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hot-category" data-category="tạp hóa việt nam" data-category-slug="tap-hoa-vn">
+                <div class="hot-category-title">
+                    <span>🛒</span>
+                    <h3>Tạp hóa VN</h3>
+                    <a href="#products" data-category-view-all data-filter="tạp hóa việt nam">Xem tất cả tạp hóa</a>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card" data-keywords="tạp hóa việt nam gạo st25">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=700&q=80"
+                                alt="Gạo ST25" />
+                            <span class="badge">Đặc sản</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Gạo thơm ST25</h3>
+                            <p class="product-description">Gạo thơm dẻo, đóng túi 5kg.</p>
+                            <p class="price">185.000đ / túi 5kg</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                    <div class="product-card" data-keywords="tạp hóa việt nam cà phê buôn ma thuột">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=700&q=80"
+                                alt="Cà phê Buôn Ma Thuột" />
+                            <span class="badge">Bán chạy</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Cà phê Buôn Ma Thuột</h3>
+                            <p class="product-description">Cà phê rang xay nguyên chất.</p>
+                            <p class="price">125.000đ / gói</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                    <div class="product-card" data-keywords="tạp hóa việt nam mật ong tây nguyên">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=700&q=80"
+                                alt="Mật ong Tây Nguyên" />
+                            <span class="badge">Nguyên chất</span>
+                            <button class="product-detail-btn" type="button">Xem chi tiết</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Mật ong Tây Nguyên</h3>
+                            <p class="product-description">Mật ong nguyên chất chai 500ml.</p>
+                            <p class="price">149.000đ / chai</p>
+                            <button class="product-detail-action" type="button">Xem chi tiết</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Khối giới thiệu -->
+    <section class="about">
+        <div class="container about-content">
+            <div>
+                <h2>Vì sao chọn G&amp;S K-Food?</h2>
+                <p>
+                    Chúng tôi cung cấp trái cây Việt Nam, rau sạch, củ hạt, thịt cá,
+                    hải sản và tạp hóa với tiêu chí tươi ngon, an toàn, giá hợp lý.
+                </p>
+
+                <div class="features">
+                    <div>✅ Nguồn gốc rõ ràng</div>
+                    <div>✅ Giao hàng nhanh</div>
+                    <div>✅ Đổi trả nếu sản phẩm lỗi</div>
+                    <div>✅ Tư vấn chọn thực phẩm theo nhu cầu</div>
+                </div>
+            </div>
+
+            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80"
+                alt="Cửa hàng rau quả" />
+        </div>
+    </section>
+
+    <!-- Liên hệ -->
+    <section class="contact" id="contact">
+        <div class="container contact-box">
+            <h2>Đặt hàng nhanh</h2>
+            <p>Liên hệ ngay để được tư vấn sản phẩm tươi ngon trong ngày.</p>
+            <div class="contact-actions">
+                <a href="tel:0971214523">☎ Gọi ngay: 0971 214 523</a>
+                <a href="https://www.facebook.com/nguyen.giang.son.966688" target="_blank"
+                    rel="noopener">💬 Facebook cá nhân</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div>
+                <h3>G&amp;S K-Food</h3>
+                <p>Chuyên thực phẩm Việt tươi sạch, an toàn cho mọi gia đình.</p>
+            </div>
+
+            <div>
+                <h4>Danh mục</h4>
+                <p>Trái cây Việt Nam</p>
+                <p>Rau sạch</p>
+                <p>Củ &amp; hạt</p>
+                <p>Thịt cá &amp; hải sản</p>
+                <p>Tạp hóa VN</p>
+            </div>
+
+            <div>
+                <h4>Liên hệ</h4>
+                <p>Hotline: 0971 214 523</p>
+                <p>Email: <a href="mailto:nguyengiangson121@gmail.com">nguyengiangson121@gmail.com</a></p>
+                <p>Địa chỉ: Hà Nội</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="floating-buttons">
+        <a class="messenger-button" href="https://www.facebook.com/nguyen.giang.son.966688"
+            target="_blank" rel="noopener" aria-label="Liên hệ qua Messenger">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor"
+                    d="M12 2C6.48 2 2 6.15 2 11.26c0 2.91 1.45 5.51 3.72 7.2V22l3.4-1.86c.9.25 1.87.38 2.88.38 5.52 0 10-4.14 10-9.26C22 6.15 17.52 2 12 2Zm.99 12.47-2.54-2.72-4.98 2.72 5.47-5.81 2.61 2.72 4.91-2.72-5.47 5.81Z" />
+            </svg>
+        </a>
+        <a class="zalo-button" href="https://zalo.me/0971214523" target="_blank" rel="noopener"
+            aria-label="Nhắn Zalo">
+            <svg viewBox="0 0 48 48" aria-hidden="true">
+                <path fill="currentColor"
+                    d="M10 7h28a7 7 0 0 1 7 7v16a7 7 0 0 1-7 7H24l-8 5v-5h-6a7 7 0 0 1-7-7V14a7 7 0 0 1 7-7Z" />
+                <text x="24" y="27" text-anchor="middle">Zalo</text>
+            </svg>
+        </a>
+    </div>
+
+    <div class="detail-overlay" id="detailOverlay" aria-hidden="true">
+        <div class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+            <button class="detail-close" type="button" aria-label="Đóng chi tiết sản phẩm">×</button>
+            <div class="detail-gallery">
+                <img class="detail-image" alt="" />
+                <div class="detail-thumbnails" aria-label="Các hình ảnh của sản phẩm"></div>
+            </div>
+            <div class="detail-content">
+                <span class="detail-badge"></span>
+                <h3 id="detailTitle"></h3>
+                <p class="detail-description">Sản phẩm tươi ngon được tuyển chọn kỹ.</p>
+                <p class="detail-price"></p>
+                <a href="tel:0971214523">Gọi tư vấn: 0971 214 523</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-overlay" id="cartOverlay" aria-hidden="true">
+        <div class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+            <button class="cart-close" type="button" aria-label="Đóng giỏ hàng">×</button>
+            <h3 id="cartTitle">Giỏ hàng của bạn</h3>
+            <div class="cart-items"></div>
+            <p class="cart-empty">Bạn chưa chọn sản phẩm nào.</p>
+            <div class="cart-total">
+                <span>Tạm tính</span>
+                <strong>0đ</strong>
+            </div>
+            <a class="checkout-btn" href="tel:0971214523">Đặt hàng qua hotline</a>
+        </div>
+    </div>
+
+    <button class="back-to-top" type="button" aria-label="Lên đầu trang">↑</button>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

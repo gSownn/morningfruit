@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản trị sản phẩm | G&amp;S K-Food</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="admin.css" />
+</head>
+
+<body>
+    <main class="admin-shell">
+        <section class="login-card" id="loginView">
+            <div class="admin-brand">G&amp;S <span>K-Food</span></div>
+            <h1>Đăng nhập quản trị</h1>
+            <p>Thông tin đăng nhập được cấu hình trong file <code>.env</code>.</p>
+            <form id="loginForm">
+                <label>
+                    Tên đăng nhập
+                    <input name="username" autocomplete="username" required />
+                </label>
+                <label>
+                    Mật khẩu
+                    <input name="password" type="password" autocomplete="current-password" required />
+                </label>
+                <button type="submit">Đăng nhập</button>
+                <p class="form-message" id="loginMessage" role="alert"></p>
+            </form>
+        </section>
+
+        <section class="admin-app" id="adminView" hidden>
+            <header class="admin-header">
+                <div>
+                    <div class="admin-brand">G&amp;S <span>K-Food</span></div>
+                    <p>Quản lý sản phẩm và tồn kho</p>
+                </div>
+                <nav>
+                    <a href="/" target="_blank" rel="noopener">Xem cửa hàng</a>
+                    <button type="button" class="button-secondary" id="logoutButton">Đăng xuất</button>
+                </nav>
+            </header>
+
+            <div class="stats-grid">
+                <article>
+                    <span>Tổng sản phẩm</span>
+                    <strong id="totalProducts">0</strong>
+                </article>
+                <article>
+                    <span>Đang bán</span>
+                    <strong id="activeProducts">0</strong>
+                </article>
+                <article>
+                    <span>Hot trong tuần</span>
+                    <strong id="hotProducts">0</strong>
+                </article>
+            </div>
+
+            <div class="admin-layout">
+                <section class="panel product-form-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <span class="eyebrow">Thông tin sản phẩm</span>
+                            <h2 id="formTitle">Thêm sản phẩm mới</h2>
+                        </div>
+                        <button type="button" class="button-link" id="resetButton">Tạo mới</button>
+                    </div>
+
+                    <form id="productForm">
+                        <input type="hidden" name="id" />
+
+                        <div class="form-grid two-columns">
+                            <label>
+                                Tên sản phẩm *
+                                <input name="name" maxlength="200" required />
+                            </label>
+                            <label>
+                                SKU *
+                                <input name="sku" maxlength="60" placeholder="VD: TC-XOAI-001" required />
+                            </label>
+                        </div>
+
+                        <div class="form-grid two-columns">
+                            <label>
+                                Danh mục *
+                                <select name="category_id" required></select>
+                            </label>
+                            <label>
+                                Slug
+                                <input name="slug" maxlength="220" placeholder="Tự tạo từ tên sản phẩm" />
+                            </label>
+                        </div>
+
+                        <div class="form-grid three-columns">
+                            <label>
+                                Giá bán *
+                                <input name="price" type="number" min="0" step="1000" required />
+                            </label>
+                            <label>
+                                Giá vận chuyển
+                                <input name="shipping_fee" type="number" min="0" step="1000" value="0" />
+                            </label>
+                            <label>
+                                Đơn vị
+                                <input name="unit" value="kg" maxlength="40" required />
+                            </label>
+                        </div>
+
+                        <label>
+                            Nhãn sản phẩm
+                            <input name="badge" value="Tươi mới" maxlength="60" placeholder="Hot, Bán chạy..." required />
+                        </label>
+
+                        <input name="origin" type="hidden" />
+                        <input name="storage_instructions" type="hidden" />
+
+                        <label>
+                            Mô tả sản phẩm
+                            <textarea name="description" rows="7" required
+                                placeholder="Nội dung mô tả sẽ giữ nguyên các dòng xuống hàng."></textarea>
+                        </label>
+
+                        <div class="image-upload-field">
+                            <label for="productImages">Hình ảnh sản phẩm *</label>
+                            <input id="productImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+                                multiple />
+                            <small>Chọn tối đa 10 ảnh, mỗi ảnh không quá 5 MB. Ảnh đầu tiên là ảnh đại diện.</small>
+                            <div class="image-preview-grid" id="imagePreview"></div>
+                        </div>
+
+                        <div class="form-grid two-columns">
+                            <label>
+                                Trạng thái
+                                <select name="status">
+                                    <option value="active">Đang bán</option>
+                                    <option value="draft">Bản nháp</option>
+                                    <option value="out_of_stock">Hết hàng</option>
+                                </select>
+                            </label>
+                            <label>
+                                Hot đến ngày
+                                <input name="hot_until" type="date" />
+                            </label>
+                        </div>
+
+                        <div class="check-row">
+                            <label><input name="is_featured" type="checkbox" /> Sản phẩm nổi bật</label>
+                            <label><input name="is_hot_week" type="checkbox" /> Hàng hot trong tuần</label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" id="saveButton">Lưu sản phẩm</button>
+                            <button type="button" class="button-secondary" id="cancelEditButton" hidden>Hủy sửa</button>
+                        </div>
+                        <p class="form-message" id="productMessage" role="status"></p>
+                    </form>
+                </section>
+
+                <section class="panel product-list-panel">
+                    <div class="panel-heading list-heading">
+                        <div>
+                            <span class="eyebrow">Kho sản phẩm</span>
+                            <h2>Danh sách sản phẩm</h2>
+                        </div>
+                        <input id="productSearch" type="search" placeholder="Tìm tên hoặc SKU..." />
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Danh mục</th>
+                                    <th>Giá</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTableBody"></tbody>
+                        </table>
+                    </div>
+                    <p class="empty-state" id="emptyState" hidden>Chưa có sản phẩm phù hợp.</p>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>
