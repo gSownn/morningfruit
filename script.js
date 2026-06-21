@@ -3,6 +3,7 @@ const state = {
     productCards: [],
     activeCategorySlug: "",
 };
+const CATEGORY_INITIAL_LIMIT = 15;
 
 let searchInput;
 let searchStatus;
@@ -41,12 +42,47 @@ function productCategorySlug(card) {
 }
 
 function formatCurrency(value) {
-    return `${new Intl.NumberFormat("vi-VN").format(value)}đ`;
+    return `${new Intl.NumberFormat("vi-VN").format(value)}w`;
+}
+
+function formatShippingFee(value) {
+    return Number(value) === 5000 ? "+ 5k tb" : "btb";
 }
 
 function parsePrice(priceText) {
     const number = Number(priceText.replace(/[^\d]/g, ""));
     return Number.isFinite(number) ? number : 0;
+}
+
+function productPriceOptions(product) {
+    return product.price_options?.length
+        ? product.price_options
+        : [{
+              label: product.unit || "sản phẩm",
+              price: Number(product.price) || 0,
+              shipping_fee: Number(product.shipping_fee) === 0 ? 0 : 5000,
+          }];
+}
+
+function priceOptionsTemplate(options) {
+    return `
+        <div class="price-options">
+            ${options
+                .map((option) => {
+                    const shippingFee = Number(option.shipping_fee) === 5000 ? 5000 : 0;
+                    return `
+                        <div class="price-option-row">
+                            <span>${escapeHtml(option.label)}</span>
+                            <span class="price-option-value">
+                                <strong>${formatCurrency(Number(option.price))}</strong>
+                                <small class="${shippingFee === 0 ? "is-free" : ""}">
+                                    ${formatShippingFee(shippingFee)}
+                                </small>
+                            </span>
+                        </div>`;
+                })
+                .join("")}
+        </div>`;
 }
 
 function escapeHtml(value) {
@@ -71,8 +107,8 @@ function productCardTemplate(product) {
     const imageList = images.map((image) => image.image_url).filter(Boolean).join("|");
     const badge = product.badge || (product.is_hot_week ? "Hot tuần" : product.is_featured ? "Nổi bật" : "Tươi mới");
     const description = product.description || product.short_description || "Sản phẩm tươi ngon được tuyển chọn kỹ.";
-    const cardDescription = product.short_description || description;
     const keywords = `${product.category_name || ""} ${product.name || ""} ${product.origin || ""}`;
+    const prices = productPriceOptions(product);
 
     return `
         <div class="product-card" data-product-id="${Number(product.id)}"
@@ -86,12 +122,57 @@ function productCardTemplate(product) {
             </div>
             <div class="product-info">
                 <h3>${escapeHtml(product.name)}</h3>
-                <p class="product-description">${escapeHtml(cardDescription)}</p>
                 <p class="product-full-description" hidden>${escapeHtml(description)}</p>
-                <p class="price">${formatCurrency(Number(product.price))} / ${escapeHtml(product.unit)}</p>
-                <button class="product-detail-action" type="button">Xem chi tiết</button>
+                ${priceOptionsTemplate(prices)}
             </div>
         </div>`;
+}
+
+function upgradeStaticProductCards() {
+    document.querySelectorAll(".product-card").forEach((card) => {
+        card.querySelectorAll(".product-detail-action").forEach((button) => button.remove());
+        if (card.querySelector(".price-options")) return;
+        const legacyPrice = card.querySelector(".price");
+        if (!legacyPrice) return;
+        const [amountText, ...unitParts] = legacyPrice.textContent.split("/");
+        const label = unitParts.join("/").trim() || "sản phẩm";
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = priceOptionsTemplate([
+            { label, price: parsePrice(amountText), shipping_fee: 5000 },
+        ]).trim();
+        legacyPrice.replaceWith(wrapper.firstElementChild);
+    });
+}
+
+function updateCategoryExpandButton(categorySection) {
+    const button = categorySection.querySelector("[data-category-expand]");
+    if (!button) return;
+    const productCount = categorySection.querySelectorAll(".product-card").length;
+    const isExpanded = categorySection.classList.contains("is-expanded");
+    const isSearching = categorySection.classList.contains("is-searching");
+
+    button.hidden = productCount <= CATEGORY_INITIAL_LIMIT || isSearching;
+    button.textContent = isExpanded ? "Ẩn bớt" : `Hiển thị tất cả (${productCount})`;
+    button.setAttribute("aria-expanded", String(isExpanded));
+}
+
+function setupCategoryPagination() {
+    document.querySelectorAll(".hot-category").forEach((categorySection) => {
+        categorySection.classList.add("is-expanded");
+        const cards = Array.from(categorySection.querySelectorAll(".product-card"));
+        cards.forEach((card, index) => {
+            card.classList.toggle("is-category-overflow", index >= CATEGORY_INITIAL_LIMIT);
+        });
+
+        const button = categorySection.querySelector("[data-category-expand]");
+        updateCategoryExpandButton(categorySection);
+        if (!button || button.dataset.paginationReady) return;
+        button.dataset.paginationReady = "true";
+        button.addEventListener("click", () => {
+            categorySection.classList.toggle("is-expanded");
+            updateCategoryExpandButton(categorySection);
+        });
+    });
 }
 
 async function loadProductsFromApi() {
@@ -117,8 +198,7 @@ async function loadProductsFromApi() {
 
         const today = new Date().toISOString().slice(0, 10);
         const weeklyProducts = products
-            .filter((product) => product.is_hot_week && (!product.hot_until || product.hot_until >= today))
-            .slice(0, 4);
+            .filter((product) => product.is_hot_week && (!product.hot_until || product.hot_until >= today));
         const weeklySection = document.querySelector("#weeklyHot");
         const weeklyGrid = weeklySection?.querySelector(".weekly-hot-grid");
 
@@ -175,6 +255,8 @@ function searchProduct(options = {}) {
     });
 
     document.querySelectorAll(".hot-category").forEach((category) => {
+        category.classList.toggle("is-searching", Boolean(query));
+        updateCategoryExpandButton(category);
         const hasVisibleProduct = Array.from(category.querySelectorAll(".product-card")).some(
             (card) => !card.classList.contains("is-hidden")
         );
@@ -191,7 +273,7 @@ function searchProduct(options = {}) {
     });
 
     document.querySelectorAll(
-        ".category-item, .category-tab[data-filter], .nav a[data-filter], [data-category-view-all]"
+        ".category-item, .category-tab[data-filter], .nav a[data-filter]"
     ).forEach((item) => {
         const itemCategorySlug = categorySlugFromFilter(item.dataset.filter || item.textContent);
         item.classList.toggle("is-active", Boolean(activeCategorySlug && itemCategorySlug === activeCategorySlug));
@@ -220,10 +302,8 @@ window.searchProduct = searchProduct;
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadProductsFromApi();
-    document.querySelectorAll(".product-info > button").forEach((button) => {
-        button.textContent = "Xem chi tiết";
-        button.disabled = false;
-    });
+    upgradeStaticProductCards();
+    setupCategoryPagination();
     searchInput = document.querySelector("#searchInput");
     searchStatus = document.querySelector("#searchStatus");
     state.productCards = Array.from(document.querySelectorAll(".product-card"));
@@ -340,7 +420,7 @@ function setupSearch() {
 
 function setupCategories() {
     document.querySelectorAll(
-        ".category-item, .category-tab[data-filter], .nav a[data-filter], [data-category-view-all]"
+        ".category-item, .category-tab[data-filter], .nav a[data-filter]"
     ).forEach((item) => {
         item.addEventListener("click", (event) => {
             if (item.matches("a")) event.preventDefault();
@@ -571,7 +651,7 @@ function setupProductDetails() {
         document.body.classList.remove("no-scroll");
     };
 
-    document.querySelectorAll(".product-detail-btn, .product-info > button").forEach((button) => {
+    document.querySelectorAll(".product-detail-btn").forEach((button) => {
         button.addEventListener("click", () => {
             const card = button.closest(".product-card");
             const productImage = card?.querySelector(".product-img img");
@@ -585,7 +665,8 @@ function setupProductDetails() {
             description.textContent = card.querySelector(".product-full-description")?.textContent ||
                 card.querySelector(".product-description")?.textContent.trim() ||
                 "Sản phẩm tươi ngon được tuyển chọn kỹ.";
-            price.textContent = card.querySelector(".price")?.textContent.trim() || "";
+            const cardPrices = card.querySelector(".price-options");
+            price.replaceChildren(cardPrices ? cardPrices.cloneNode(true) : document.createTextNode(""));
             renderGallery(createImageVariants(card, productImage), productName);
 
             overlay.classList.add("is-open");

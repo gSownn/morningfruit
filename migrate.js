@@ -4,6 +4,16 @@ const mysql = require("mysql2/promise");
 require("dotenv").config();
 
 async function migrate() {
+    const sslCaPath = String(process.env.DB_SSL_CA_PATH || "").trim();
+    const ssl = sslCaPath
+        ? {
+              ca: await fs.readFile(
+                  path.isAbsolute(sslCaPath) ? sslCaPath : path.join(__dirname, sslCaPath),
+                  "utf8"
+              ),
+              rejectUnauthorized: true,
+          }
+        : undefined;
     const connection = await mysql.createConnection({
         host: process.env.DB_HOST || "127.0.0.1",
         port: Number(process.env.DB_PORT) || 3306,
@@ -12,13 +22,20 @@ async function migrate() {
         database: process.env.DB_NAME || "gs_k_food",
         charset: "utf8mb4_unicode_ci",
         multipleStatements: true,
+        ssl,
     });
 
     try {
-        const migrationPath = path.join(__dirname, "migrate_utf8_shipping.sql");
-        const sql = await fs.readFile(migrationPath, "utf8");
-        await connection.query(sql);
-        console.log("Migration UTF-8 và giá vận chuyển đã hoàn tất.");
+        const migrations = ["migrate_product_price_options.sql"];
+        if (String(process.env.RUN_LEGACY_MIGRATION || "").toLowerCase() === "true") {
+            migrations.unshift("migrate_utf8_shipping.sql");
+        }
+        for (const fileName of migrations) {
+            const sql = await fs.readFile(path.join(__dirname, fileName), "utf8");
+            await connection.query(sql);
+            console.log(`Đã chạy ${fileName}.`);
+        }
+        console.log("Migration đã hoàn tất.");
     } finally {
         await connection.end();
     }

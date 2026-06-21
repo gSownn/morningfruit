@@ -24,6 +24,8 @@ const cancelEditButton = document.querySelector("#cancelEditButton");
 const resetButton = document.querySelector("#resetButton");
 const productImagesInput = document.querySelector("#productImages");
 const imagePreview = document.querySelector("#imagePreview");
+const priceOptionsList = document.querySelector("#priceOptionsList");
+const addPriceOptionButton = document.querySelector("#addPriceOptionButton");
 
 function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, (character) => {
@@ -33,7 +35,50 @@ function escapeHtml(value) {
 }
 
 function formatCurrency(value) {
-    return `${new Intl.NumberFormat("vi-VN").format(Number(value) || 0)}đ`;
+    return `${new Intl.NumberFormat("vi-VN").format(Number(value) || 0)}w`;
+}
+
+function formatShippingFee(value) {
+    return Number(value) === 5000 ? "+ 5k tb" : "btb";
+}
+
+function productPriceOptions(product) {
+    return product.price_options?.length
+        ? product.price_options
+        : [{
+              label: product.unit || "sản phẩm",
+              price: product.price || 0,
+              shipping_fee: Number(product.shipping_fee) === 0 ? 0 : 5000,
+          }];
+}
+
+function priceOptionRowMarkup(option = {}) {
+    const shippingFee = Number(option.shipping_fee) === 0 ? 0 : 5000;
+    return `
+        <div class="price-option-row">
+            <input type="text" data-price-label maxlength="80" placeholder="VD: 1 cân"
+                value="${escapeHtml(option.label || "")}" aria-label="Tên mức giá" required />
+            <input type="number" data-price-value min="0" step="1000" placeholder="Giá bán"
+                value="${option.price ?? ""}" aria-label="Giá bán" required />
+            <select data-price-shipping aria-label="Phí vận chuyển">
+                <option value="5000"${shippingFee === 5000 ? " selected" : ""}>5k tb</option>
+                <option value="0"${shippingFee === 0 ? " selected" : ""}>btb</option>
+            </select>
+            <button type="button" class="price-option-remove" aria-label="Xóa mức giá">×</button>
+        </div>`;
+}
+
+function renderPriceOptionRows(options = [{ label: "1 cân", price: "", shipping_fee: 5000 }]) {
+    const rows = options.length ? options : [{ label: "1 cân", price: "", shipping_fee: 5000 }];
+    priceOptionsList.innerHTML = rows.map(priceOptionRowMarkup).join("");
+}
+
+function readPriceOptions() {
+    return Array.from(priceOptionsList.querySelectorAll(".price-option-row")).map((row) => ({
+        label: row.querySelector("[data-price-label]").value.trim(),
+        price: Number(row.querySelector("[data-price-value]").value),
+        shipping_fee: Number(row.querySelector("[data-price-shipping]").value),
+    }));
 }
 
 function slugify(value) {
@@ -106,6 +151,12 @@ function renderProducts() {
             const imageMarkup = image
                 ? `<img src="${escapeHtml(image)}" alt="" />`
                 : '<span class="image-placeholder"></span>';
+            const pricesMarkup = productPriceOptions(product)
+                .map(
+                    (option) => `${escapeHtml(option.label)}: <strong>${formatCurrency(option.price)}</strong>
+                        ${formatShippingFee(option.shipping_fee)}`
+                )
+                .join("<br>");
 
             return `
                 <tr>
@@ -119,7 +170,7 @@ function renderProducts() {
                         </div>
                     </td>
                     <td>${escapeHtml(product.category_name)}</td>
-                    <td>${formatCurrency(product.price)} / ${escapeHtml(product.unit)}<br><small>VC: ${formatCurrency(product.shipping_fee)}</small></td>
+                    <td>${pricesMarkup}</td>
                     <td><span class="status-pill ${escapeHtml(product.status)}">${statusLabels[product.status] || product.status}</span></td>
                     <td>
                         <div class="table-actions">
@@ -207,8 +258,6 @@ function resetProductForm() {
     clearPreviewUrls();
     productForm.reset();
     productForm.elements.id.value = "";
-    productForm.elements.unit.value = "kg";
-    productForm.elements.shipping_fee.value = "0";
     productForm.elements.badge.value = "Tươi mới";
     productForm.elements.status.value = "active";
     productImagesInput.value = "";
@@ -217,6 +266,7 @@ function resetProductForm() {
     saveButton.textContent = "Lưu sản phẩm";
     cancelEditButton.hidden = true;
     showMessage(productMessage, "");
+    renderPriceOptionRows();
     renderImagePreviews();
 }
 
@@ -236,9 +286,6 @@ function editProduct(productId) {
         "origin",
         "storage_instructions",
         "badge",
-        "unit",
-        "price",
-        "shipping_fee",
         "status",
         "hot_until",
     ];
@@ -248,6 +295,7 @@ function editProduct(productId) {
     fields.forEach((field) => {
         if (productForm.elements[field]) productForm.elements[field].value = product[field] ?? "";
     });
+    renderPriceOptionRows(productPriceOptions(product));
     productImagesInput.value = "";
     renderImagePreviews();
     productForm.elements.is_featured.checked = Boolean(product.is_featured);
@@ -263,8 +311,10 @@ function formToPayload() {
     const formData = new FormData(productForm);
     const payload = Object.fromEntries(formData.entries());
     payload.category_id = Number(payload.category_id);
-    payload.price = Number(payload.price);
-    payload.shipping_fee = Number(payload.shipping_fee || 0);
+    payload.price_options = readPriceOptions();
+    payload.unit = payload.price_options[0]?.label || "sản phẩm";
+    payload.price = payload.price_options[0]?.price || 0;
+    payload.shipping_fee = payload.price_options[0]?.shipping_fee || 0;
     payload.is_featured = productForm.elements.is_featured.checked;
     payload.is_hot_week = productForm.elements.is_hot_week.checked;
     payload.images = [...adminState.existingImages];
@@ -321,6 +371,28 @@ productForm.elements.name.addEventListener("input", () => {
 
 productForm.elements.slug.addEventListener("input", () => {
     productForm.elements.slug.dataset.edited = productForm.elements.slug.value ? "true" : "";
+});
+
+addPriceOptionButton.addEventListener("click", () => {
+    const rowCount = priceOptionsList.querySelectorAll(".price-option-row").length;
+    if (rowCount >= 12) {
+        showMessage(productMessage, "Mỗi sản phẩm chỉ được tối đa 12 mức giá.");
+        return;
+    }
+    priceOptionsList.insertAdjacentHTML("beforeend", priceOptionRowMarkup());
+    priceOptionsList.querySelector(".price-option-row:last-child [data-price-label]")?.focus();
+});
+
+priceOptionsList.addEventListener("click", (event) => {
+    const removeButton = event.target.closest(".price-option-remove");
+    if (!removeButton) return;
+    const rows = priceOptionsList.querySelectorAll(".price-option-row");
+    if (rows.length === 1) {
+        rows[0].querySelector("[data-price-label]").value = "";
+        rows[0].querySelector("[data-price-value]").value = "";
+        return;
+    }
+    removeButton.closest(".price-option-row").remove();
 });
 
 productImagesInput.addEventListener("change", () => {
@@ -416,6 +488,8 @@ productTableBody.addEventListener("click", async (event) => {
 productSearch.addEventListener("input", renderProducts);
 resetButton.addEventListener("click", resetProductForm);
 cancelEditButton.addEventListener("click", resetProductForm);
+
+renderPriceOptionRows();
 
 (async function initializeAdmin() {
     try {

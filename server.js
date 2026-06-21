@@ -132,6 +132,31 @@ function parseNumber(value, fallback = null) {
     return Number.isFinite(number) ? number : fallback;
 }
 
+function parsePriceOptions(options, fallbackUnit, fallbackPrice, fallbackShippingFee) {
+    const source = Array.isArray(options) && options.length
+        ? options
+        : [{ label: fallbackUnit, price: fallbackPrice, shipping_fee: fallbackShippingFee }];
+
+    if (source.length > 12) throw new Error("Mỗi sản phẩm chỉ được tối đa 12 mức giá.");
+
+    const parsedOptions = source.map((option, index) => {
+        const label = optionalText(option?.label, 80);
+        const price = parseNumber(option?.price);
+        const shippingFee = parseNumber(option?.shipping_fee, 0);
+        if (!label) throw new Error(`Tên mức giá ${index + 1} là bắt buộc.`);
+        if (price === null || price < 0) throw new Error(`Giá của mức ${label} không hợp lệ.`);
+        if (![0, 5000].includes(shippingFee)) {
+            throw new Error(`Phí vận chuyển của mức ${label} chỉ được là 5k tb hoặc btb.`);
+        }
+        return { label, price, shipping_fee: shippingFee, sort_order: index };
+    });
+    const normalizedLabels = parsedOptions.map((option) => option.label.toLocaleLowerCase("vi"));
+    if (new Set(normalizedLabels).size !== normalizedLabels.length) {
+        throw new Error("Tên các mức giá không được trùng nhau.");
+    }
+    return parsedOptions;
+}
+
 function parseImages(images, productName) {
     if (!Array.isArray(images)) return [];
 
@@ -308,7 +333,13 @@ function validateProductPayload(body) {
     const name = optionalText(body.name, 200);
     const sku = optionalText(body.sku, 60)?.toUpperCase();
     const categoryId = Number(body.category_id);
-    const price = parseNumber(body.price);
+    const priceOptions = parsePriceOptions(
+        body.price_options,
+        body.unit,
+        body.price,
+        body.shipping_fee
+    );
+    const primaryPrice = priceOptions[0];
     const description = multilineText(body.description, 10000);
     const allowedStatuses = new Set(["draft", "active", "out_of_stock", "archived"]);
     const status = allowedStatuses.has(body.status) ? body.status : "draft";
@@ -316,7 +347,6 @@ function validateProductPayload(body) {
     if (!name) throw new Error("Tên sản phẩm là bắt buộc.");
     if (!sku) throw new Error("SKU là bắt buộc.");
     if (!Number.isInteger(categoryId) || categoryId <= 0) throw new Error("Danh mục không hợp lệ.");
-    if (price === null || price < 0) throw new Error("Giá bán không hợp lệ.");
     if (!description) throw new Error("Mô tả sản phẩm là bắt buộc.");
 
     const product = {
@@ -329,9 +359,9 @@ function validateProductPayload(body) {
         origin: optionalText(body.origin, 200),
         storage_instructions: optionalText(body.storage_instructions, 300),
         badge: optionalText(body.badge, 60) || "Tươi mới",
-        unit: optionalText(body.unit, 40) || "sản phẩm",
-        price,
-        shipping_fee: parseNumber(body.shipping_fee, 0),
+        unit: primaryPrice.label.slice(0, 40),
+        price: primaryPrice.price,
+        shipping_fee: primaryPrice.shipping_fee,
         status,
         is_featured: Boolean(body.is_featured),
         is_hot_week: Boolean(body.is_hot_week),
@@ -339,15 +369,12 @@ function validateProductPayload(body) {
     };
 
     if (!product.slug) throw new Error("Slug không hợp lệ.");
-    if (product.shipping_fee < 0) {
-        throw new Error("Giá vận chuyển không hợp lệ.");
-    }
-
     const images = parseImages(body.images, name);
     if (!images.length) throw new Error("Sản phẩm cần ít nhất một URL hình ảnh hợp lệ.");
 
     return {
         product,
+        priceOptions,
         images,
     };
 }
@@ -379,12 +406,25 @@ async function fetchProducts({ publicOnly = false } = {}) {
          ORDER BY product_id, is_primary DESC, sort_order, id`,
         [productIds]
     );
+    const [priceOptions] = await pool.query(
+        `SELECT id, product_id, label, price, shipping_fee, sort_order
+         FROM product_price_options
+         WHERE product_id IN (?)
+         ORDER BY product_id, sort_order, id`,
+        [productIds]
+    );
     const imagesByProduct = new Map();
+    const pricesByProduct = new Map();
 
     images.forEach((image) => {
         const productImages = imagesByProduct.get(image.product_id) || [];
         productImages.push({ ...image, is_primary: Boolean(image.is_primary) });
         imagesByProduct.set(image.product_id, productImages);
+    });
+    priceOptions.forEach((option) => {
+        const productPrices = pricesByProduct.get(option.product_id) || [];
+        productPrices.push(option);
+        pricesByProduct.set(option.product_id, productPrices);
     });
 
     return products.map((product) => ({
@@ -392,6 +432,14 @@ async function fetchProducts({ publicOnly = false } = {}) {
         is_featured: Boolean(product.is_featured),
         is_hot_week: Boolean(product.is_hot_week),
         images: imagesByProduct.get(product.id) || [],
+        price_options: pricesByProduct.get(product.id) || [
+            {
+                label: product.unit,
+                price: product.price,
+                shipping_fee: Number(product.shipping_fee) === 0 ? 0 : 5000,
+                sort_order: 0,
+            },
+        ],
     }));
 }
 
@@ -409,6 +457,22 @@ async function replaceProductImages(connection, productId, images) {
     await connection.query(
         `INSERT INTO product_images
             (product_id, image_url, alt_text, sort_order, is_primary)
+         VALUES ?`,
+        [values]
+    );
+}
+
+async function replaceProductPriceOptions(connection, productId, priceOptions) {
+    await connection.query("DELETE FROM product_price_options WHERE product_id = ?", [productId]);
+    const values = priceOptions.map((option) => [
+        productId,
+        option.label,
+        option.price,
+        option.shipping_fee,
+        option.sort_order,
+    ]);
+    await connection.query(
+        `INSERT INTO product_price_options (product_id, label, price, shipping_fee, sort_order)
          VALUES ?`,
         [values]
     );
@@ -556,6 +620,7 @@ app.post("/api/admin/products", requireAdmin, async (request, response, next) =>
             ]
         );
 
+        await replaceProductPriceOptions(connection, result.insertId, payload.priceOptions);
         await replaceProductImages(connection, result.insertId, payload.images);
         await connection.query(
             `INSERT INTO inventory (product_id, stock_quantity, low_stock_threshold)
@@ -626,6 +691,7 @@ app.put("/api/admin/products/:id", requireAdmin, async (request, response, next)
         staleImageUrls = oldImages
             .map((image) => image.image_url)
             .filter((imageUrl) => !newImageUrls.has(imageUrl));
+        await replaceProductPriceOptions(connection, productId, payload.priceOptions);
         await replaceProductImages(connection, productId, payload.images);
         await connection.commit();
         await removeStoredImages(staleImageUrls);
@@ -681,6 +747,11 @@ app.use("/uploads", express.static(uploadDirectory, {
     dotfiles: "deny",
     index: false,
     maxAge: "1d",
+}));
+app.use("/assets", express.static(path.join(rootDirectory, "assets"), {
+    dotfiles: "deny",
+    index: false,
+    maxAge: "7d",
 }));
 
 app.get("/", (_request, response) => response.sendFile(path.join(rootDirectory, "index.html")));

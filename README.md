@@ -38,11 +38,16 @@ SOURCE D:/morningfruit/database.sql;
 Nếu database cũ đang lỗi chữ Việt, mở và chạy `migrate_utf8_shipping.sql` **một lần**.
 File này chuẩn hóa `utf8mb4`, sửa tên danh mục/sản phẩm mẫu và thêm cột `shipping_fee`.
 
-Cũng có thể chạy migration bằng Node:
+Chạy migration bảng giá bằng Node:
 
 ```powershell
 npm run migrate
 ```
+
+Lệnh này tạo/cập nhật bảng `product_price_options` để mỗi sản phẩm có nhiều mức giá
+như `1 cân`, `2 cân`, `5 cân`, kèm phí vận chuyển riêng `5k tb` hoặc `btb`.
+Hãy sao lưu database trước khi chạy trên hosting. Migration UTF-8 cũ không tự chạy lại
+để tránh ghi đè dữ liệu sản phẩm đã chỉnh trong admin.
 
 ## 3. Cấu hình kết nối
 

@@ -54,6 +54,25 @@ CREATE TABLE products (
     INDEX idx_products_name (name)
 ) ENGINE=InnoDB;
 
+-- Một sản phẩm có thể có nhiều mức giá: 1 cân, 2 cân, 5 cân...
+CREATE TABLE product_price_options (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    product_id BIGINT UNSIGNED NOT NULL,
+    label VARCHAR(80) NOT NULL,
+    price DECIMAL(12, 2) NOT NULL,
+    shipping_fee DECIMAL(12, 2) NOT NULL DEFAULT 0,
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_product_price_options_product
+        FOREIGN KEY (product_id) REFERENCES products(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT chk_product_price_options_price CHECK (price >= 0),
+    CONSTRAINT chk_product_price_options_shipping CHECK (shipping_fee IN (0, 5000)),
+    UNIQUE KEY uq_product_price_options_order (product_id, sort_order),
+    INDEX idx_product_price_options_product (product_id)
+) ENGINE=InnoDB;
+
 -- Một sản phẩm có nhiều ảnh. Frontend dùng các dòng này để tạo gallery thumbnail.
 CREATE TABLE product_images (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -185,6 +204,10 @@ FROM (
         'mat-ong-tay-nguyen', 'Mật ong nguyên chất chai 500ml.', 'Tây Nguyên', 'Nguyên chất', 'chai', 149000, FALSE
 ) AS seed
 JOIN categories AS c ON c.slug = seed.category_slug;
+
+INSERT INTO product_price_options (product_id, label, price, shipping_fee, sort_order)
+SELECT id, unit, price, CASE WHEN shipping_fee = 0 THEN 0 ELSE 5000 END, 0
+FROM products;
 
 INSERT INTO product_images (product_id, image_url, alt_text, sort_order, is_primary)
 SELECT p.id, seed.image_url, CONCAT(p.name, ' - ảnh chính'), 1, TRUE

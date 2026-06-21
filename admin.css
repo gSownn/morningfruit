@@ -272,6 +272,71 @@ button:disabled {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.price-options-field {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: #f8fafc;
+    padding: 14px;
+}
+
+.price-options-heading,
+.price-option-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.price-options-heading {
+    justify-content: space-between;
+}
+
+.price-options-heading div,
+.price-options-list {
+    display: grid;
+    gap: 4px;
+}
+
+.price-options-heading small {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.price-option-row {
+    display: grid;
+    grid-template-columns: minmax(90px, 1fr) minmax(100px, 1fr) 76px 38px;
+}
+
+.price-option-row input,
+.price-option-row select {
+    min-width: 0;
+}
+
+.price-option-remove {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    min-height: 38px;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: #fff1f2;
+    color: var(--danger);
+    padding: 0;
+    font-size: 20px;
+}
+
+@media (max-width: 520px) {
+    .price-options-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .price-options-heading button {
+        width: 100%;
+    }
+}
+
 .check-row {
     flex-wrap: wrap;
 }
